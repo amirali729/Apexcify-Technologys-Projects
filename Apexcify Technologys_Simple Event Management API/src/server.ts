@@ -6,14 +6,19 @@ import userRoutes from './routes/users.route'
 
 import connectDB from './config/db'
 
+// Load environment variables from .env file
 dotenv.config()
+
 const app : Application = express()
 
+// Middleware setup
 app.use(express.json())
 app.use(morgan("tiny"))
 
+// Connect to the database
 connectDB();
 
+// Routes
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
 

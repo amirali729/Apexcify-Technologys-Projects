@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import Event, { IEvent } from "../models/event.model";
 
+// Get all events
+// Route: GET /api/events
+// Access: Public
 export const getAllEvents = async (
   req: Request,
   res: Response
@@ -14,6 +17,9 @@ export const getAllEvents = async (
   }
 };
 
+// Get a single event by ID
+// Route: GET /api/events/:id
+// Access: Public
 export const getEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const eventId = req.params.id;
@@ -31,18 +37,23 @@ export const getEvent = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// Create a new event
+// Route: POST /api/events
+// Access: Private (only logged-in users)
 export const createEvent = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const userId = (req as any).user.id;
-
+    
+    // Create new event object with data from request
     const event: IEvent = new Event({
       ...req.body,
       createdBy: userId,
     });
 
+    // Save new event to database
     const savedEvent: IEvent = await event.save();
     res.status(200).json(savedEvent);
   } catch (error: any) {
@@ -51,6 +62,9 @@ export const createEvent = async (
   }
 };
 
+// Update an event
+// Route: PUT /api/events/:id
+// Access: Private (only creator can update)
 export const updateEvent = async (
   req: Request,
   res: Response
@@ -65,6 +79,7 @@ export const updateEvent = async (
       return;
     }
 
+    // Check if logged-in user is the creator
     if (event.createdBy.toString() !== userId) {
       res
         .status(403)
@@ -72,6 +87,7 @@ export const updateEvent = async (
       return;
     }
 
+    // Update event with new data
     const updatedEvent = await Event.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -85,6 +101,9 @@ export const updateEvent = async (
   }
 };
 
+// Delete an event
+// Route: DELETE /api/events/:id
+// Access: Private (only creator can delete)
 export const deleteEvent = async (
   req: Request,
   res: Response
@@ -99,6 +118,7 @@ export const deleteEvent = async (
       return;
     }
 
+    // Check if logged-in user is the creator
     if (event.createdBy.toString() !== userId) {
       res
         .status(403)
@@ -106,6 +126,7 @@ export const deleteEvent = async (
       return;
     }
 
+    // Delete the event
     await Event.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ message: "Event deleted" });
