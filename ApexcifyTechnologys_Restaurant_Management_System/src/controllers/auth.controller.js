@@ -1,99 +1,76 @@
-const userModel = require("../models/userModel");
-const bcrypt = require("bcryptjs");
-const JWT = require("jsonwebtoken");
+// controllers/authController.js
+import { User } from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-// REGISTER
-const registerController = async (req, res) => {
-  try {
-    const { userName, email, password, phone, address, answer } = req.body;
-    //validation
-    if (!userName || !email || !password || !address || !phone || !answer) {
-      return res.status(500).send({
-        success: false,
-        message: "Please Provide All Fields",
-      });
-    }
-    // chekc user
-    const exisiting = await userModel.findOne({ email });
-    if (exisiting) {
-      return res.status(500).send({
-        success: false,
-        message: "Email Already Registerd please Login",
-      });
-    }
-    //hashing password
-    var salt = bcrypt.genSaltSync(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    //create new user
-    const user = await userModel.create({
-      userName,
-      email,
-      password: hashedPassword,
-      address,
-      phone,
-      answer,
-    });
-    res.status(201).send({
-      success: true,
-      message: "Successfully Registered",
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Error In Register API",
-      error,
-    });
+// REGISTER USER
+const registerController = asyncHandler(async (req, res) => {
+  const { userName, email, password, phone, address, answer } = req.body;
+
+  if (!userName || !email || !password || !address || !phone || !answer) {
+    throw new ApiError(400, "Please provide all required fields");
   }
-};
 
-// LOGIN
-const loginController = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    //validfatuion
-    if (!email || !password) {
-      return res.status(500).send({
-        success: false,
-        message: "Please PRovide EMail OR Password",
-      });
-    }
-    //check user
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "User Not Found",
-      });
-    }
-    //check user password  | compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(500).send({
-        success: false,
-        message: "Invalid Credentials",
-      });
-    }
-    // token
-    const token = JWT.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-    user.password = undefined;
-    res.status(200).send({
-      success: true,
-      message: "Login Successfully",
-      token,
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Error In Login API",
-      error,
-    });
+  // Check existing user
+  const existing = await User.findOne({ email });
+  if (existing) {
+    throw new ApiError(400, "Email already registered, please login");
   }
-};
 
-module.exports = { registerController, loginController };
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create new user
+  const user = await User.create({
+    userName,
+    email,
+    password: hashedPassword,
+    address,
+    phone,
+    answer,
+  });
+
+  // Remove password from response
+  user.password = undefined;
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, user, "User registered successfully"));
+});
+
+// LOGIN USER
+const loginController = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new ApiError(400, "Please provide email and password");
+  }
+
+  // Check user existence
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Compare password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  // Generate JWT token
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_SECRET_EXPIRY,
+  });
+
+  user.password = undefined;
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { token, user }, "Login successful"));
+});
+
+export { registerController, loginController };

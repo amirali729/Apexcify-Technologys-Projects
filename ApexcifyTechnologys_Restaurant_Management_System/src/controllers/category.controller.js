@@ -1,5 +1,5 @@
 // controllers/categoryController.js
-import categoryModel from "../models/categoryModel.js";
+import { Category } from "../models/category.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -12,7 +12,7 @@ const createCatController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide category title");
   }
 
-  const newCategory = new categoryModel({ title, imageUrl });
+  const newCategory = new Category({ title, imageUrl });
   await newCategory.save();
 
   return res
@@ -22,7 +22,7 @@ const createCatController = asyncHandler(async (req, res) => {
 
 // GET ALL CATEGORIES
 const getAllCatController = asyncHandler(async (req, res) => {
-  const categories = await categoryModel.find({});
+  const categories = await Category.find({});
   if (!categories || categories.length === 0) {
     throw new ApiError(404, "No categories found");
   }
@@ -43,7 +43,7 @@ const updateCatController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title, imageUrl } = req.body;
 
-  const updatedCategory = await categoryModel.findByIdAndUpdate(
+  const updatedCategory = await Category.findByIdAndUpdate(
     id,
     { title, imageUrl },
     { new: true }
@@ -63,7 +63,7 @@ const deleteCatController = asyncHandler(async (req, res) => {
   const { id } = req.params;
   if (!id) throw new ApiError(400, "Please provide category ID");
 
-  const category = await categoryModel.findById(id);
+  const category = await Category.findById(id);
   if (!category) throw new ApiError(404, "Category not found");
 
   await categoryModel.findByIdAndDelete(id);

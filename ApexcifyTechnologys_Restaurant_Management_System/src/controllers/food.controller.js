@@ -1,6 +1,6 @@
 // controllers/foodController.js
-import foodModel from "../models/foodModal.js";
-import orderModel from "../models/orderModel.js";
+import { Food } from "../models/food.model.js";
+import { Order } from "../models/order.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -24,7 +24,7 @@ const createFoodController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide all required fields");
   }
 
-  const newFood = new foodModel({
+  const newFood = new Food({
     title,
     description,
     price,
@@ -46,7 +46,7 @@ const createFoodController = asyncHandler(async (req, res) => {
 
 // GET ALL FOODS
 const getAllFoodsController = asyncHandler(async (req, res) => {
-  const foods = await foodModel.find({});
+  const foods = await Food.find({});
   if (!foods || foods.length === 0) {
     throw new ApiError(404, "No food items found");
   }
@@ -61,7 +61,7 @@ const getSingleFoodController = asyncHandler(async (req, res) => {
   const foodId = req.params.id;
   if (!foodId) throw new ApiError(400, "Please provide food ID");
 
-  const food = await foodModel.findById(foodId);
+  const food = await Food.findById(foodId);
   if (!food) throw new ApiError(404, "No food found with this ID");
 
   return res.status(200).json(new ApiResponse(200, food, "Food fetched successfully"));
@@ -72,7 +72,7 @@ const getFoodByResturantController = asyncHandler(async (req, res) => {
   const resturantId = req.params.id;
   if (!resturantId) throw new ApiError(400, "Please provide restaurant ID");
 
-  const foods = await foodModel.find({ resturnat: resturantId });
+  const foods = await Food.find({ resturnat: resturantId });
   if (!foods || foods.length === 0) {
     throw new ApiError(404, "No food items found for this restaurant");
   }
@@ -87,10 +87,10 @@ const updateFoodController = asyncHandler(async (req, res) => {
   const foodId = req.params.id;
   if (!foodId) throw new ApiError(400, "Please provide food ID");
 
-  const food = await foodModel.findById(foodId);
+  const food = await Food.findById(foodId);
   if (!food) throw new ApiError(404, "Food not found");
 
-  const updatedFood = await foodModel.findByIdAndUpdate(foodId, req.body, { new: true });
+  const updatedFood = await Food.findByIdAndUpdate(foodId, req.body, { new: true });
 
   return res
     .status(200)
@@ -102,10 +102,10 @@ const deleteFoodController = asyncHandler(async (req, res) => {
   const foodId = req.params.id;
   if (!foodId) throw new ApiError(400, "Please provide food ID");
 
-  const food = await foodModel.findById(foodId);
+  const food = await Food.findById(foodId);
   if (!food) throw new ApiError(404, "Food not found");
 
-  await foodModel.findByIdAndDelete(foodId);
+  await Food.findByIdAndDelete(foodId);
 
   return res.status(200).json(new ApiResponse(200, null, "Food item deleted successfully"));
 });
@@ -119,7 +119,7 @@ const placeOrderController = asyncHandler(async (req, res) => {
 
   const total = cart.reduce((sum, item) => sum + item.price, 0);
 
-  const newOrder = new orderModel({
+  const newOrder = new Order({
     foods: cart,
     payment: total,
     buyer: req.body.id,
@@ -138,7 +138,7 @@ const orderStatusController = asyncHandler(async (req, res) => {
   if (!orderId) throw new ApiError(400, "Please provide valid order ID");
 
   const { status } = req.body;
-  const order = await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+  const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
   if (!order) throw new ApiError(404, "Order not found");
 
   return res

@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 /**
  * Middleware to authenticate users using JWT
  */
-const authMiddleware = asyncHandler(async (req, res, next) => {
+export const authMiddleware = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers["authorization"];
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -24,4 +24,4 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   next();
 });
 
-export default authMiddleware;
+

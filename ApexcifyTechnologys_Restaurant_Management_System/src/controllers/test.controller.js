@@ -7,3 +7,4 @@ const testUserController = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, null, "Test user data fetched successfully"));
 });
+export { testUserController}

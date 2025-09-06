@@ -1,5 +1,5 @@
 // controllers/resturantController.js
-import resturantModel from "../models/resturantModel.js";
+import { Restaurant } from "../models/restaurant.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -25,7 +25,7 @@ const createResturantController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide title and address/coordinates");
   }
 
-  const newResturant = new resturantModel({
+  const newResturant = new Restaurant({
     title,
     imageUrl,
     foods,
@@ -49,7 +49,7 @@ const createResturantController = asyncHandler(async (req, res) => {
 
 // GET ALL RESTAURANTS
 const getAllResturantController = asyncHandler(async (req, res) => {
-  const resturants = await resturantModel.find({});
+  const resturants = await Restaurant.find({});
   if (!resturants || resturants.length === 0) {
     throw new ApiError(404, "No restaurants available");
   }
@@ -68,7 +68,7 @@ const getResturantByIdController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide restaurant ID");
   }
 
-  const resturant = await resturantModel.findById(resturantId);
+  const resturant = await Restaurant.findById(resturantId);
   if (!resturant) {
     throw new ApiError(404, "No restaurant found with this ID");
   }
@@ -85,7 +85,7 @@ const deleteResturantController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide restaurant ID");
   }
 
-  const resturant = await resturantModel.findByIdAndDelete(resturantId);
+  const resturant = await Restaurant.findByIdAndDelete(resturantId);
   if (!resturant) {
     throw new ApiError(404, "No restaurant found to delete");
   }
