@@ -66,7 +66,7 @@ const deleteCatController = asyncHandler(async (req, res) => {
   const category = await Category.findById(id);
   if (!category) throw new ApiError(404, "Category not found");
 
-  await categoryModel.findByIdAndDelete(id);
+  await Category.findByIdAndDelete(id);
 
   return res
     .status(200)
