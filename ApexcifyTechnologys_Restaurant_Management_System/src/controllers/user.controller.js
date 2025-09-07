@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 // GET USER INFO
 const getUserController = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.body.id).select("-password");
+  const user = await User.findById({_id: req.user.id}).select("-password");
   if (!user) throw new ApiError(404, "User Not Found");
 
   return res
@@ -17,7 +17,7 @@ const getUserController = asyncHandler(async (req, res) => {
 
 // UPDATE USER
 const updateUserController = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.body.id);
+  const user = await User.findById(req.user.id);
   if (!user) throw new ApiError(404, "User Not Found");
 
   const { userName, address, phone } = req.body;
@@ -34,7 +34,7 @@ const updateUserController = asyncHandler(async (req, res) => {
 
 // UPDATE USER PASSWORD
 const updatePasswordController = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.body.id);
+  const user = await User.findById(req.user.id);
   if (!user) throw new ApiError(404, "User Not Found");
 
   const { oldPassword, newPassword } = req.body;

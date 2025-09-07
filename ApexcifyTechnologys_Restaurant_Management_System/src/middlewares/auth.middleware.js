@@ -19,7 +19,7 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   // Attach user ID to request body
-  req.body.id = decoded.id;
+   req.user = { id: decoded.id };
 
   next();
 });
