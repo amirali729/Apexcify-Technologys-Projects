@@ -1,5 +1,5 @@
-import Application from "../models/Application.js";
-import Job from "../models/Job.js";
+import Application from "../models/application.model.js";
+import Job from "../models/Job.model.js";
 import cloudinary from "cloudinary";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";

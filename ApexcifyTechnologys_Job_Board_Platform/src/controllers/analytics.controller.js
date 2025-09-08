@@ -1,4 +1,4 @@
-import Analytics from "../models/Analytics.js";
+import Analytics from "../models/analytics.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 

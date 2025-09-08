@@ -1,6 +1,6 @@
 import express from "express";
-import { saveJob, getSavedJobs, removeSavedJob } from "../controllers/savedJobController.js";
-import { isAuthenticated, isAuthorized } from "../middlewares/authMiddleware.js";
+import { saveJob, getSavedJobs, removeSavedJob } from "../controllers/savedJob.controller.js";
+import { isAuthenticated, isAuthorized } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 

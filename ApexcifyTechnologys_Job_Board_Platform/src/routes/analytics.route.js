@@ -1,6 +1,6 @@
 import express from "express";
-import { trackEvent, getAnalytics } from "../controllers/analyticsController.js";
-import { isAuthenticated, isAuthorized } from "../middlewares/authMiddleware.js";
+import { trackEvent, getAnalytics } from "../controllers/analytics.controller.js";
+import { isAuthenticated, isAuthorized } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 

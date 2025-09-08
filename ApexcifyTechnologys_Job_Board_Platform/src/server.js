@@ -10,7 +10,7 @@ import path from "path";
 import userRoutes from "./routes/user.routes.js";
 import jobRoutes from "./routes/job.routes.js";
 import applicationRoutes from "./routes/application.routes.js";
-import { errorMiddleware } from "./middleware/errorMiddleware.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.CORS,
     credentials: true,
   })
 );
@@ -42,10 +42,7 @@ app.use(errorMiddleware);
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((error) => console.error("❌ MongoDB connection error:", error));
 

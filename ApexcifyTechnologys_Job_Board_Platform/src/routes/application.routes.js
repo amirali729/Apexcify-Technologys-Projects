@@ -5,8 +5,8 @@ import {
   jobseekerGetAllApplications,
   jobseekerDeleteApplication,
   updateApplicationStatus,
-} from "../controllers/applicationController.js";
-import { isAuthenticated, isAuthorized } from "../middlewares/authMiddleware.js";
+} from "../controllers/application.controller.js";
+import { isAuthenticated, isAuthorized } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
